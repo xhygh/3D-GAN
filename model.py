@@ -38,7 +38,7 @@ class Generator(nn.Module):
         else:
             return np.random.uniform(-1, 1, (batchsize, 200, 1, 1, 1)).astype(np.float32)
 
-class Discriminator(chainer.Chain):
+class Discriminator(nn.Module):
     def __init__(self):
         ngf = 64
         super(Discriminator, self).__init__(
