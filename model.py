@@ -1,15 +1,8 @@
 import torch
-#from chainer import computational_graph
-#from chainer import cuda
 import torch.optimizer as optim
-#from chainer import serializers
 from torch.autograd import variable
-#from chainer.utils import type_check
-#from chainer import function
-#from chainer.initializers import GlorotNormal
 
 import torch.nn.founctional as F
-#import chainer.links as L
 import numpy as np
 import torch.nn import nn
 class Generator(nn.Module):
