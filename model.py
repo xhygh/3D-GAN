@@ -11,22 +11,23 @@ from torch.autograd import variable
 import torch.nn.founctional as F
 #import chainer.links as L
 import numpy as np
-
-class Generator(chainer.Chain):
+import torch.nn import nn
+class Generator(nn.Module):
     def __init__(self):
-        w = GlorotNormal()
+        nz = 200
+        ngf = 64
         super(Generator, self).__init__(
-            dc1 = L.DeconvolutionND(3, 200, 512, 4, stride=1, initialW=w),
-            dc2 = L.DeconvolutionND(3, 512, 256, 4, stride=2, pad=1, initialW=w),
-            dc3 = L.DeconvolutionND(3, 256, 128, 4, stride=2, pad=1, initialW=w),
-            dc4 = L.DeconvolutionND(3, 128,  64, 4, stride=2, pad=1, initialW=w),
-            dc5 = L.DeconvolutionND(3,  64,   1, 4, stride=2, pad=1, initialW=w),
-
-            bn1 = L.BatchNormalization(512),
-            bn2 = L.BatchNormalization(256),
-            bn3 = L.BatchNormalization(128),
-            bn4 = L.BatchNormalization(64),
-            bn5 = L.BatchNormalization(1),
+            dc1= nn.ConvTranspose3d(in_channels=nz, out_channels=ngf * 8, kernel_size=4, stride=1, padding=0),
+            dc2= nn.ConvTranspose3d(in_channels=ngf * 8, out_channels=ngf * 4, kernel_size=4, stride=2, padding=1),
+            dc3= nn.ConvTranspose3d(in_channels=ngf * 4, out_channels=ngf * 2, kernel_size=4, stride=2, padding=1),
+            dc4= nn.ConvTranspose3d(in_channels=ngf * 2, out_channels=ngf * 1, kernel_size=4, stride=2, padding=1),
+            dc5= nn.ConvTranspose3d(in_channels=ngf , out_channels= 1, kernel_size=4, stride=2, padding=1),
+            #############
+            bn1 = nn.BatchNorm3d(ngf * 8),
+            bn2 = nn.BatchNorm3d(ngf * 4),
+            bn3 = nn.BatchNorm3d(ngf * 2),
+            bn4 = nn.BatchNorm3d(ngf),
+            bn5 = nn.BatchNorm3d(1),
         )
 
     def __call__(self, z):
@@ -46,19 +47,19 @@ class Generator(chainer.Chain):
 
 class Discriminator(chainer.Chain):
     def __init__(self):
-        w = GlorotNormal()
+        ngf = 64
         super(Discriminator, self).__init__(
-            dc1 = L.ConvolutionND(3,   1,  64, 4, stride=2, pad=1, initialW=w),
-            dc2 = L.ConvolutionND(3,  64, 128, 4, stride=2, pad=1, initialW=w),
-            dc3 = L.ConvolutionND(3, 128, 256, 4, stride=2, pad=1, initialW=w),
-            dc4 = L.ConvolutionND(3, 256, 512, 4, stride=2, pad=1, initialW=w),
-            dc5 = L.ConvolutionND(3, 512,   1, 4, stride=1, pad=1, initialW=w),
-
-            bn1 = L.BatchNormalization(64),
-            bn2 = L.BatchNormalization(128),
-            bn3 = L.BatchNormalization(256),
-            bn4 = L.BatchNormalization(512),
-            bn5 = L.BatchNormalization(1),
+            dc1= nn.ConvTranspose3d(in_channels=1, out_channels=ngf , kernel_size=4, stride=2, padding=1),
+            dc2= nn.ConvTranspose3d(in_channels=ngf, out_channels=ngf * 2 , kernel_size=4, stride=2, padding=1),
+            dc3= nn.ConvTranspose3d(in_channels=ngf*2, out_channels=ngf * 4 , kernel_size=4, stride=2, padding=1),
+            dc4= nn.ConvTranspose3d(in_channels=ngf*4, out_channels=ngf * 8 , kernel_size=4, stride=2, padding=1),
+            dc5= nn.ConvTranspose3d(in_channels=ngf*8, out_channels=1 , kernel_size=4, stride=1, padding=1),
+            #############
+            bn1 = nn.BatchNorm3d(ngf),
+            bn2 = nn.BatchNorm3d(ngf * 2),
+            bn3 = nn.BatchNorm3d(ngf * 4),
+            bn4 = n.BatchNorm3d(ngf * 8),
+            bn5 = nn.BatchNorm3d(1)
         )
 
     def __call__(self, x):
